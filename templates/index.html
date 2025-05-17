@@ -2,8 +2,9 @@
 <html>
 <head>
     <title>Tic Tac Toe Adventure</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;700&display=swap');
@@ -47,6 +48,8 @@
             font-size: 3rem;
             letter-spacing: 2px;
             animation: titlePulse 2s infinite alternate;
+            text-align: center;
+            padding: 0 15px;
         }
 
         #lobby {
@@ -122,8 +125,8 @@
 
         #game-container {
             display: none;
-            width: 90%;
-            max-width: 900px;
+            width: 95%;
+            max-width: 1000px;
             background: white;
             border-radius: 20px;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
@@ -133,21 +136,15 @@
             flex-direction: column;
         }
 
-        @media (min-width: 768px) {
-            #game-container {
-                flex-direction: row;
-                height: 550px;
-            }
-        }
-
         #board-container {
-            flex: 2;
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 20px;
             position: relative;
+            width: 100%;
         }
 
         #game-info {
@@ -178,6 +175,8 @@
             color: var(--primary);
             margin: 15px 0;
             min-height: 30px;
+            text-align: center;
+            padding: 0 10px;
         }
 
         table {
@@ -199,14 +198,6 @@
             transition: all 0.3s;
             position: relative;
             overflow: hidden;
-        }
-
-        @media (min-width: 768px) {
-            td {
-                width: 100px;
-                height: 100px;
-                font-size: 70px;
-            }
         }
 
         td:hover {
@@ -265,6 +256,7 @@
             display: flex;
             gap: 15px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .game-btn {
@@ -276,6 +268,7 @@
             font-weight: bold;
             transition: all 0.3s;
             font-family: 'Quicksand', sans-serif;
+            margin-bottom: 10px;
         }
 
         #restartBtn {
@@ -300,20 +293,14 @@
         }
 
         #chat {
-            flex: 1;
-            border-left: none;
+            width: 100%;
             display: flex;
             flex-direction: column;
-            height: 100%;
             background: #f8f9fa;
             padding: 20px;
             position: relative;
-        }
-
-        @media (min-width: 768px) {
-            #chat {
-                border-left: 2px solid #eee;
-            }
+            border-top: 2px solid #eee;
+            height: 300px;
         }
 
         #chat:before {
@@ -512,24 +499,110 @@
         }
 
         /* Responsive adjustments */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-            
+        @media (min-width: 768px) {
             #game-container {
-                flex-direction: column;
-                height: auto;
+                flex-direction: row;
+                height: 550px;
             }
             
-            td {
-                width: 80px;
-                height: 80px;
-                font-size: 50px;
+            #board-container {
+                flex: 2;
             }
             
             #chat {
-                height: 300px;
+                flex: 1;
+                height: auto;
+                border-top: none;
+                border-left: 2px solid #eee;
+            }
+            
+            td {
+                width: 100px;
+                height: 100px;
+                font-size: 70px;
+            }
+        }
+        
+        /* Mobile-specific enhancements */
+        @media (max-width: 767px) {
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 15px;
+            }
+            
+            #game-container {
+                width: 95%;
+                margin: 10px 0;
+                padding-bottom: 10px;
+            }
+            
+            #board-container {
+                padding: 15px 10px;
+            }
+            
+            table {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            td {
+                width: 30%;
+                height: 0;
+                padding-bottom: 30%; /* Makes cells square */
+                font-size: 50px;
+                position: relative;
+            }
+            
+            td span {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+            
+            #status {
+                font-size: 18px;
+                margin: 10px 0;
+            }
+            
+            #buttons-container {
+                margin-top: 15px;
+                gap: 10px;
+            }
+            
+            .game-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+            
+            #chat {
+                height: 250px;
+                padding: 15px 10px;
+            }
+            
+            #chat-messages {
+                margin: 35px 0 10px 0;
+            }
+            
+            #chatInput {
+                padding: 10px;
+                font-size: 14px;
+            }
+        }
+        
+        /* Small mobile devices */
+        @media (max-width: 375px) {
+            td {
+                font-size: 40px;
+            }
+            
+            .game-btn {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+            
+            #chat {
+                height: 220px;
             }
         }
     </style>
@@ -537,25 +610,22 @@
 <body>
     <h1>Tic Tac Toe Adventure</h1>
     
-
-<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="messageModalLabel">Game Message</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body" id="modalMessage">
-        <!-- Message will appear here -->
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="modalCloseBtn" data-bs-dismiss="modal">OK</button>
-      </div>
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalLabel">Game Message</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalMessage">
+                    <!-- Message will appear here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="modalCloseBtn" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
-
-
 
     <div id="lobby">
         <h2>Welcome to the Game!</h2>
@@ -629,6 +699,8 @@
         const roomInfoDiv = document.getElementById('room-info');
         const errorDiv = document.getElementById('error');
         const joinBtn = document.getElementById('joinBtn');
+        const modalMessage = document.getElementById('modalMessage');
+        const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
 
         // Add button click animation
         const addClickAnimation = (button) => {
@@ -699,7 +771,6 @@
         });
 
         socket.on('update_board', (data) => {
-             
             updateBoard(data.board);
             
             // Animated status update
@@ -730,8 +801,10 @@
         });
 
         socket.on('room_closed', () => {
-            alert('Other player has left. Room is closed.');
-            resetToLobby();
+            // Use modal instead of alert for better mobile experience
+            modalMessage.textContent = 'Other player has left or room is closed.';
+            messageModal.show();
+            document.getElementById('modalCloseBtn').addEventListener('click', resetToLobby);
         });
 
         function updateBoard(board) {
@@ -787,17 +860,11 @@
             clearConfetti();
         };
 
-       exitBtn.onclick = () => {
-    if (!room) return;
-    socket.emit('exit_room', { room, name: playerName });
-    // Don't reset UI here; wait for 'room_closed' from server
-};
-
-socket.on('room_closed', () => {
-    alert('Other player has left or room is closed.');
-    resetToLobby();
-});
-
+        exitBtn.onclick = () => {
+            if (!room) return;
+            socket.emit('exit_room', { room, name: playerName });
+            // Don't reset UI here; wait for 'room_closed' from server
+        };
 
         chatInput.addEventListener('keydown', e => {
             if (e.key === 'Enter' && chatInput.value.trim() !== '') {
