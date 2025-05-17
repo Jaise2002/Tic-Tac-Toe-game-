@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tic Tac Toe Adventure</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;700&display=swap');
+        
+        :root {
+            --primary: #6a11cb;
+            --primary-light: #8e54e9;
+            --secondary: #ff8a00;
+            --secondary-light: #ffbd4a;
+            --background: #f8f9fa;
+            --text: #333;
+            --x-color: #ff5252;
+            --o-color: #2979ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            min-height: 100vh;
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        h1 {
+            font-family: 'Fredoka One', cursive;
+            color: white;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            font-size: 3rem;
+            letter-spacing: 2px;
+            animation: titlePulse 2s infinite alternate;
+        }
+
+        #lobby {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            animation: floatIn 0.8s ease-out;
+        }
+
+        #lobby h2 {
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(142, 84, 233, 0.2);
+            outline: none;
+        }
+
+        #joinBtn {
+            background: linear-gradient(45deg, var(--secondary), var(--secondary-light));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: 'Quicksand', sans-serif;
+            margin-top: 10px;
+            box-shadow: 0 5px 15px rgba(255, 138, 0, 0.3);
+        }
+
+        #joinBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 138, 0, 0.4);
+        }
+
+        #joinBtn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(255, 138, 0, 0.4);
+        }
+
+        #error {
+            color: #ff5252;
+            margin-top: 15px;
+            font-weight: bold;
+            min-height: 20px;
+        }
+
+        #game-container {
+            display: none;
+            width: 90%;
+            max-width: 900px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            animation: fadeIn 0.5s;
+            margin: 20px 0;
+            flex-direction: column;
+        }
+
+        @media (min-width: 768px) {
+            #game-container {
+                flex-direction: row;
+                height: 550px;
+            }
+        }
+
+        #board-container {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        #game-info {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #room-info {
+            background: var(--primary-light);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        #players {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+
+        #status {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 15px 0;
+            min-height: 30px;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: auto;
+            position: relative;
+        }
+
+        td {
+            width: 90px;
+            height: 90px;
+            font-size: 60px;
+            border: 3px solid var(--primary);
+            cursor: pointer;
+            user-select: none;
+            text-align: center;
+            vertical-align: middle;
+            background: white;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            td {
+                width: 100px;
+                height: 100px;
+                font-size: 70px;
+            }
+        }
+
+        td:hover {
+            background-color: rgba(142, 84, 233, 0.1);
+            transform: scale(1.05);
+            z-index: 1;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        td:active {
+            transform: scale(0.95);
+        }
+
+        td[data-row="0"][data-col="0"] {
+            border-top-left-radius: 15px;
+            border-top: none;
+            border-left: none;
+        }
+
+        td[data-row="0"][data-col="2"] {
+            border-top-right-radius: 15px;
+            border-top: none;
+            border-right: none;
+        }
+
+        td[data-row="2"][data-col="0"] {
+            border-bottom-left-radius: 15px;
+            border-bottom: none;
+            border-left: none;
+        }
+
+        td[data-row="2"][data-col="2"] {
+            border-bottom-right-radius: 15px;
+            border-bottom: none;
+            border-right: none;
+        }
+
+        td[data-row="0"][data-col="1"] {
+            border-top: none;
+        }
+
+        td[data-row="1"][data-col="0"] {
+            border-left: none;
+        }
+
+        td[data-row="1"][data-col="2"] {
+            border-right: none;
+        }
+
+        td[data-row="2"][data-col="1"] {
+            border-bottom: none;
+        }
+
+        #buttons-container {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .game-btn {
+            padding: 12px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 50px;
+            border: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        #restartBtn {
+            background: linear-gradient(45deg, var(--primary), var(--primary-light));
+            color: white;
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+        }
+
+        #exitBtn {
+            background: #f5f5f5;
+            color: #666;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-btn:active {
+            transform: translateY(1px);
+        }
+
+        #chat {
+            flex: 1;
+            border-left: none;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: #f8f9fa;
+            padding: 20px;
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            #chat {
+                border-left: 2px solid #eee;
+            }
+        }
+
+        #chat:before {
+            content: "Chat";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--primary-light);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+        }
+
+        #chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            margin: 40px 0 10px 0;
+            font-size: 14px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #chat-messages div {
+            margin-bottom: 10px;
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            clear: both;
+            word-wrap: break-word;
+            animation: messageIn 0.3s;
+            position: relative;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .msg-left {
+            background-color: #f0f0f0;
+            float: left;
+            text-align: left;
+            border-bottom-left-radius: 5px;
+        }
+
+        .msg-right {
+            background-color: var(--primary-light);
+            color: white;
+            float: right;
+            text-align: right;
+            border-bottom-right-radius: 5px;
+        }
+
+        #chatInput {
+            padding: 12px 15px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+            border-radius: 50px;
+            border: 2px solid #ddd;
+            font-family: 'Quicksand', sans-serif;
+            transition: all 0.3s;
+        }
+
+        #chatInput:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(142, 84, 233, 0.2);
+            outline: none;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes floatIn {
+            0% {
+                opacity: 0;
+                transform: translateY(40px) rotateX(10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) rotateX(0);
+            }
+        }
+
+        @keyframes messageIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes titlePulse {
+            from {
+                transform: scale(1);
+                text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+            }
+            to {
+                transform: scale(1.05);
+                text-shadow: 5px 5px 0 rgba(0,0,0,0.3);
+            }
+        }
+
+        @keyframes winAnimation {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes confetti {
+            0% {
+                transform: translateY(0) rotate(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .bounce {
+            animation: bounce 0.5s;
+        }
+
+        .pulse {
+            animation: pulse 0.5s;
+        }
+
+        .win-animation {
+            animation: winAnimation 0.8s;
+        }
+
+        .x-symbol {
+            color: var(--x-color);
+            position: relative;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .o-symbol {
+            color: var(--o-color);
+            position: relative;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            #game-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            td {
+                width: 80px;
+                height: 80px;
+                font-size: 50px;
+            }
+            
+            #chat {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe Adventure</h1>
+    
+
+<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="messageModalLabel">Game Message</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="modalMessage">
+        <!-- Message will appear here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="modalCloseBtn" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+    <div id="lobby">
+        <h2>Welcome to the Game!</h2>
+        <div class="input-group">
+            <input type="text" id="nameInput" placeholder="Enter your name" />
+        </div>
+        <div class="input-group">
+            <input type="text" id="roomInput" placeholder="Enter room ID (or leave empty to create)" />
+        </div>
+        <button id="joinBtn">Create / Join Room</button>
+        <div id="error"></div>
+    </div>
+
+    <div id="game-container">
+        <div id="board-container">
+            <div id="game-info">
+                <div id="room-info"></div>
+                <div id="players"></div>
+            </div>
+            
+            <table id="board">
+                <tr>
+                    <td data-row="0" data-col="0"></td>
+                    <td data-row="0" data-col="1"></td>
+                    <td data-row="0" data-col="2"></td>
+                </tr>
+                <tr>
+                    <td data-row="1" data-col="0"></td>
+                    <td data-row="1" data-col="1"></td>
+                    <td data-row="1" data-col="2"></td>
+                </tr>
+                <tr>
+                    <td data-row="2" data-col="0"></td>
+                    <td data-row="2" data-col="1"></td>
+                    <td data-row="2" data-col="2"></td>
+                </tr>
+            </table>
+            
+            <div id="status"></div>
+            
+            <div id="buttons-container">
+                <button id="restartBtn" class="game-btn">Restart Game</button>
+                <button id="exitBtn" class="game-btn">Exit Room</button>
+            </div>
+        </div>
+        
+        <div id="chat">
+            <div id="chat-messages"></div>
+            <input type="text" id="chatInput" placeholder="Type a message..." autocomplete="off" />
+        </div>
+    </div>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        let room = null;
+        let symbol = null;
+        let playerName = null;
+        let gameOver = false;
+        let confettiElements = [];
+
+        const lobby = document.getElementById('lobby');
+        const gameContainer = document.getElementById('game-container');
+        const boardCells = document.querySelectorAll('#board td');
+        const status = document.getElementById('status');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chatInput');
+        const restartBtn = document.getElementById('restartBtn');
+        const exitBtn = document.getElementById('exitBtn');
+        const playersDiv = document.getElementById('players');
+        const roomInfoDiv = document.getElementById('room-info');
+        const errorDiv = document.getElementById('error');
+        const joinBtn = document.getElementById('joinBtn');
+
+        // Add button click animation
+        const addClickAnimation = (button) => {
+            button.addEventListener('click', function() {
+                this.classList.add('pulse');
+                setTimeout(() => {
+                    this.classList.remove('pulse');
+                }, 500);
+            });
+        };
+
+        addClickAnimation(joinBtn);
+        addClickAnimation(restartBtn);
+        addClickAnimation(exitBtn);
+
+        joinBtn.onclick = () => {
+            playerName = document.getElementById('nameInput').value.trim();
+            if (!playerName) {
+                errorDiv.textContent = "Please enter your name.";
+                errorDiv.classList.add('bounce');
+                setTimeout(() => {
+                    errorDiv.classList.remove('bounce');
+                }, 500);
+                return;
+            }
+            errorDiv.textContent = "";
+            room = document.getElementById('roomInput').value.trim();
+
+            if (!room) {
+                socket.emit('create_room');
+            } else {
+                socket.emit('join_room', {room, name: playerName});
+            }
+        };
+
+        socket.on('room_created', (data) => {
+            room = data.room;
+            socket.emit('join_room', {room, name: playerName});
+        });
+
+        socket.on('joined_room', (data) => {
+            symbol = data.symbol;
+            lobby.style.display = 'none';
+            gameContainer.style.display = 'flex';
+            roomInfoDiv.textContent = `Room: ${data.room}`;
+            
+            // Enhanced player display with colored symbols
+            const playersList = data.players.map(p => {
+                const symbolClass = p.symbol === 'X' ? 'x-symbol' : 'o-symbol';
+                return `${p.name} (<span class="${symbolClass}">${p.symbol}</span>)`;
+            }).join(', ');
+            
+            playersDiv.innerHTML = `Players: ${playersList}`;
+            
+            updateBoard(data.board);
+            gameOver = false;
+            
+            // Animated status message
+            status.textContent = '';
+            status.classList.add('bounce');
+            setTimeout(() => {
+                status.textContent = `You are '${symbol}'. Waiting for opponent...`;
+                status.classList.remove('bounce');
+            }, 300);
+            
+            chatMessages.innerHTML = '';
+            data.chat.forEach(msg => addChatMessage(msg.name, msg.message));
+        });
+
+        socket.on('update_board', (data) => {
+             
+            updateBoard(data.board);
+            
+            // Animated status update
+            status.classList.add('bounce');
+            setTimeout(() => {
+                status.textContent = data.message;
+                status.classList.remove('bounce');
+            }, 300);
+            
+            gameOver = data.game_over;
+            
+            // Show confetti animation if game is over with a winner
+            if (gameOver && data.message.includes('wins')) {
+                createConfetti();
+            }
+        });
+
+        socket.on('error_message', (data) => {
+            errorDiv.textContent = data.error;
+            errorDiv.classList.add('bounce');
+            setTimeout(() => {
+                errorDiv.classList.remove('bounce');
+            }, 500);
+        });
+
+        socket.on('receive_message', data => {
+            addChatMessage(data.name, data.message);
+        });
+
+        socket.on('room_closed', () => {
+            alert('Other player has left. Room is closed.');
+            resetToLobby();
+        });
+
+        function updateBoard(board) {
+            boardCells.forEach(cell => {
+                const r = cell.getAttribute('data-row');
+                const c = cell.getAttribute('data-col');
+                const value = board[r*3 + (+c)];
+                
+                // If the cell value has changed, add animation
+                if (cell.textContent !== value && value !== '') {
+                    cell.classList.add('bounce');
+                    setTimeout(() => {
+                        cell.classList.remove('bounce');
+                    }, 500);
+                    
+                    // Add colored symbols
+                    if (value === 'X') {
+                        cell.innerHTML = `<span class="x-symbol">X</span>`;
+                    } else if (value === 'O') {
+                        cell.innerHTML = `<span class="o-symbol">O</span>`;
+                    } else {
+                        cell.textContent = value;
+                    }
+                } else if (value === '') {
+                    cell.textContent = '';
+                }
+            });
+        }
+
+        boardCells.forEach(cell => {
+            cell.onclick = () => {
+                if (gameOver) return;
+                if (!room) return;
+                
+                // Add click animation
+                cell.classList.add('pulse');
+                setTimeout(() => {
+                    cell.classList.remove('pulse');
+                }, 300);
+                
+                const r = parseInt(cell.getAttribute('data-row'));
+                const c = parseInt(cell.getAttribute('data-col'));
+                socket.emit('make_move', {room, row: r, col: c});
+            };
+        });
+
+        restartBtn.onclick = () => {
+            if (!room) return;
+            socket.emit('restart_game', {room});
+            chatMessages.innerHTML = '';
+            
+            // Clear any confetti
+            clearConfetti();
+        };
+
+       exitBtn.onclick = () => {
+    if (!room) return;
+    socket.emit('exit_room', { room, name: playerName });
+    // Don't reset UI here; wait for 'room_closed' from server
+};
+
+socket.on('room_closed', () => {
+    alert('Other player has left or room is closed.');
+    resetToLobby();
+});
+
+
+        chatInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && chatInput.value.trim() !== '') {
+                socket.emit('send_message', {room, message: chatInput.value.trim()});
+                chatInput.value = '';
+            }
+        });
+
+        function addChatMessage(name, message) {
+            const div = document.createElement('div');
+            if (name === playerName) {
+                div.className = 'msg-right';
+                div.innerHTML = `<strong>You:</strong> ${message}`;
+            } else {
+                div.className = 'msg-left';
+                div.innerHTML = `<strong>${name}:</strong> ${message}`;
+            }
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function resetToLobby() {
+            room = null;
+            symbol = null;
+            gameOver = false;
+            lobby.style.display = 'block';
+            gameContainer.style.display = 'none';
+            errorDiv.textContent = "";
+            chatMessages.innerHTML = '';
+            status.textContent = '';
+            playersDiv.textContent = '';
+            roomInfoDiv.textContent = '';
+            updateBoard(['', '', '', '', '', '', '', '', '']);
+            
+            // Clear any confetti
+            clearConfetti();
+        }
+
+        // Confetti animation for winning
+        function createConfetti() {
+            clearConfetti(); // Clear any existing confetti
+            
+            const colors = ['#ff5252', '#2979ff', '#ffbd4a', '#8e54e9', '#4caf50', '#ff9800'];
+            
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.top = -20 + 'px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.opacity = Math.random() + 0.5;
+                confetti.style.animation = `confetti ${Math.random() * 3 + 2}s linear forwards`;
+                document.body.appendChild(confetti);
+                confettiElements.push(confetti);
+            }
+            
+            // Clean up confetti after animation completes
+            setTimeout(clearConfetti, 5000);
+        }
+
+        function clearConfetti() {
+            confettiElements.forEach(element => {
+                if (element.parentNode) {
+                    element.parentNode.removeChild(element);
+                }
+            });
+            confettiElements = [];
+        }
+
+        // Add hover effects to cells
+        boardCells.forEach(cell => {
+            cell.addEventListener('mouseenter', () => {
+                if (cell.textContent === '' && !gameOver) {
+                    cell.style.boxShadow = '0 0 15px rgba(142, 84, 233, 0.5)';
+                }
+            });
+            
+            cell.addEventListener('mouseleave', () => {
+                cell.style.boxShadow = '';
+            });
+        });
+    </script>
+</body>
+</html>
